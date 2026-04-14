@@ -2,7 +2,7 @@
 
 Plataforma minimalista para el control de gasto familiar. Conecta tu correo (Gmail), detecta notificaciones bancarias y te permite conciliarlas contra cuentas que definas.
 
-Stack: **Next.js 14 (App Router) · TypeScript · Tailwind · Prisma · SQLite · NextAuth (Google) · Gmail API**.
+Stack: **Next.js 14 (App Router) · TypeScript · Tailwind · Prisma · PostgreSQL · NextAuth (Google) · Gmail API**.
 
 ---
 
@@ -10,11 +10,24 @@ Stack: **Next.js 14 (App Router) · TypeScript · Tailwind · Prisma · SQLite �
 
 ```bash
 cd SpendControl
-cp .env.example .env       # completa GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET
+cp .env.example .env       # completa DATABASE_URL (Postgres) + Google creds
 npm install
-npx prisma db push          # crea la DB local (SQLite en ./dev.db)
+npx prisma db push          # aplica el schema a tu Postgres
 npm run dev                 # http://localhost:3000
 ```
+
+## Deploy en Vercel
+
+1. **Importa el repo** en Vercel.
+2. **Crea Vercel Postgres** (Storage → Create → Postgres) y conéctalo al proyecto; Vercel inyecta `POSTGRES_PRISMA_URL` y `POSTGRES_URL_NON_POOLING`.
+3. **Variables de entorno** adicionales:
+   - `DATABASE_URL` = valor de `POSTGRES_PRISMA_URL`
+   - `DIRECT_URL` = valor de `POSTGRES_URL_NON_POOLING`
+   - `NEXTAUTH_URL` = URL pública del deploy (ej. `https://spendcontrol-loesca.vercel.app`)
+   - `NEXTAUTH_SECRET` = `openssl rand -base64 32`
+   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+4. **Google OAuth:** agrega el redirect URI `https://<tu-dominio>/api/auth/callback/google` en Google Cloud Console.
+5. **Deploy.** El script de build corre `prisma generate && prisma db push && next build`, dejando el schema aplicado automáticamente.
 
 ### Credenciales Google
 
