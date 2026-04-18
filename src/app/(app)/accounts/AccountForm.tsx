@@ -21,7 +21,7 @@ export function AccountForm() {
     (e.target as HTMLFormElement).reset();
   }
   return (
-    <form onSubmit={submit} className="grid md:grid-cols-5 gap-3 items-end">
+    <form onSubmit={submit} className="grid md:grid-cols-5 gap-4 items-end">
       <div className="md:col-span-2">
         <Label>Nombre</Label>
         <Input name="name" required placeholder="Cuenta corriente" />

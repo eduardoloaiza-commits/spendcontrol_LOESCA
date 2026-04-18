@@ -7,12 +7,20 @@
 }
 
 html, body {
-  background: #ffffff;
-  color: #0a0a0a;
+  background: #f7f9ff;
+  color: #181c20;
   font-feature-settings: "tnum", "cv11";
+}
+
+h1, h2, h3, h4 {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  letter-spacing: -0.015em;
 }
 
 .amount {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

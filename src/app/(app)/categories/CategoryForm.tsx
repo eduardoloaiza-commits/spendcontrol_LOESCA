@@ -21,7 +21,7 @@ export function CategoryForm() {
     (e.target as HTMLFormElement).reset();
   }
   return (
-    <form onSubmit={submit} className="grid md:grid-cols-4 gap-3 items-end">
+    <form onSubmit={submit} className="grid md:grid-cols-4 gap-4 items-end">
       <div className="md:col-span-2">
         <Label>Nombre</Label>
         <Input name="name" required />
@@ -36,7 +36,12 @@ export function CategoryForm() {
       </div>
       <div>
         <Label>Color</Label>
-        <Input name="color" type="color" defaultValue="#1E40FF" />
+        <Input
+          name="color"
+          type="color"
+          defaultValue="#004bba"
+          className="h-12 p-1 cursor-pointer"
+        />
       </div>
       <div className="md:col-span-4">
         <Button disabled={loading}>{loading ? "Guardando…" : "Crear categoría"}</Button>

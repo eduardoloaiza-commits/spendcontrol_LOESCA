@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 
-type Variant = "primary" | "ghost" | "danger";
+type Variant = "primary" | "ghost" | "danger" | "chip";
 export function Button({
   variant = "primary",
   className,
@@ -11,10 +11,15 @@ export function Button({
     <button
       {...props}
       className={clsx(
-        "rounded-chip px-4 py-2 text-sm font-medium transition",
-        variant === "primary" && "bg-ink text-white hover:bg-graphite",
-        variant === "ghost" && "bg-mist text-ink hover:bg-silver/60",
-        variant === "danger" && "bg-coral text-white hover:opacity-90",
+        "inline-flex items-center justify-center gap-2 font-bold transition-all disabled:opacity-50 disabled:pointer-events-none",
+        variant === "primary" &&
+          "rounded-xl px-5 py-3 text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95",
+        variant === "ghost" &&
+          "rounded-xl px-5 py-3 text-sm bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest",
+        variant === "danger" &&
+          "rounded-xl px-5 py-3 text-sm bg-error text-on-error hover:opacity-90",
+        variant === "chip" &&
+          "rounded-full px-5 py-2 text-sm bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest",
         className,
       )}
     />

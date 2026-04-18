@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { RefreshCw } from "lucide-react";
 
 export function SyncButton() {
   const r = useRouter();
@@ -18,8 +19,11 @@ export function SyncButton() {
   }
   return (
     <div className="flex items-center gap-3">
-      {msg && <span className="text-xs text-slate">{msg}</span>}
-      <Button onClick={run} disabled={busy}>{busy ? "Sincronizando…" : "Sincronizar"}</Button>
+      {msg && <span className="text-xs text-on-surface-variant">{msg}</span>}
+      <Button onClick={run} disabled={busy}>
+        <RefreshCw size={14} className={busy ? "animate-spin" : ""} />
+        {busy ? "Sincronizando…" : "Sincronizar"}
+      </Button>
     </div>
   );
 }

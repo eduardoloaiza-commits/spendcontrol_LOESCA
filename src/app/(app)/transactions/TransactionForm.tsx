@@ -38,7 +38,7 @@ export function TransactionForm({
   }
 
   return (
-    <form onSubmit={submit} className="grid md:grid-cols-6 gap-3 items-end">
+    <form onSubmit={submit} className="grid md:grid-cols-6 gap-4 items-end">
       <div>
         <Label>Tipo</Label>
         <Select value={kind} onChange={(e) => setKind(e.target.value as any)}>
