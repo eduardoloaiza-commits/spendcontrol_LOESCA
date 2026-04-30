@@ -2,7 +2,7 @@
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import { LogIn, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export function SignInButton() {
   const [email, setEmail] = useState("");
@@ -58,21 +58,6 @@ export function SignInButton() {
           {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>
-
-      <div className="flex items-center gap-3 text-[11px] text-on-surface-variant/70">
-        <span className="flex-1 h-px bg-outline-variant/30" />
-        o
-        <span className="flex-1 h-px bg-outline-variant/30" />
-      </div>
-
-      <button
-        type="button"
-        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-outline-variant/40 bg-surface-container-low px-6 py-3.5 font-bold text-on-surface hover:bg-surface-container transition-all"
-      >
-        <LogIn size={18} />
-        Entrar con Google
-      </button>
 
       <p className="text-center text-xs text-on-surface-variant">
         ¿No tienes cuenta?{" "}
