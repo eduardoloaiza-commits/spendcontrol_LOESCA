@@ -7,3 +7,4 @@ out
 *.db-journal
 .DS_Store
 tsconfig.tsbuildinfo
+.claude/settings.local.json
