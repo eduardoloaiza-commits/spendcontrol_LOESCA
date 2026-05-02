@@ -1,21 +1,23 @@
 "use client";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, Select } from "@/components/ui/Input";
+import { CategoryPicker, type PickerCategory } from "@/components/forms/CategoryPicker";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type Option = { id: string; name: string; kind?: string };
+type Account = { id: string; name: string };
 
 export function TransactionForm({
   accounts,
   categories,
 }: {
-  accounts: Option[];
-  categories: Option[];
+  accounts: Account[];
+  categories: PickerCategory[];
 }) {
   const r = useRouter();
   const [loading, setLoading] = useState(false);
   const [kind, setKind] = useState<"expense" | "income">("expense");
+  const [categoryId, setCategoryId] = useState("");
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,6 +30,7 @@ export function TransactionForm({
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         ...raw,
+        categoryId: categoryId || null,
         amount: kind === "expense" ? -Math.abs(amt) : Math.abs(amt),
         status: "confirmed",
       }),
@@ -35,13 +38,20 @@ export function TransactionForm({
     setLoading(false);
     r.refresh();
     (e.target as HTMLFormElement).reset();
+    setCategoryId("");
   }
 
   return (
     <form onSubmit={submit} className="grid md:grid-cols-6 gap-4 items-end">
       <div>
         <Label>Tipo</Label>
-        <Select value={kind} onChange={(e) => setKind(e.target.value as any)}>
+        <Select
+          value={kind}
+          onChange={(e) => {
+            setKind(e.target.value as any);
+            setCategoryId("");
+          }}
+        >
           <option value="expense">Gasto</option>
           <option value="income">Ingreso</option>
         </Select>
@@ -58,24 +68,28 @@ export function TransactionForm({
         <Label>Cuenta</Label>
         <Select name="finAccountId" required>
           {accounts.map((a) => (
-            <option key={a.id} value={a.id}>{a.name}</option>
+            <option key={a.id} value={a.id}>
+              {a.name}
+            </option>
           ))}
         </Select>
       </div>
       <div>
-        <Label>Categoría</Label>
-        <Select name="categoryId">
-          <option value="">—</option>
-          {categories
-            .filter((c) => !c.kind || c.kind === kind)
-            .map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-        </Select>
-      </div>
-      <div>
         <Label>Fecha</Label>
-        <Input name="occurredAt" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
+        <Input
+          name="occurredAt"
+          type="date"
+          defaultValue={new Date().toISOString().slice(0, 10)}
+        />
+      </div>
+      <div className="md:col-span-6">
+        <Label>Categoría</Label>
+        <CategoryPicker
+          categories={categories}
+          value={categoryId}
+          onChange={setCategoryId}
+          filterKind={kind}
+        />
       </div>
       <div className="md:col-span-6">
         <Button disabled={loading}>{loading ? "Guardando…" : "Registrar"}</Button>

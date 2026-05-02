@@ -13,7 +13,10 @@ export default async function ReconcilePage() {
       orderBy: { occurredAt: "desc" },
     }),
     prisma.finAccount.findMany({ where: { householdId: household.id, archived: false } }),
-    prisma.category.findMany({ where: { householdId: household.id } }),
+    prisma.category.findMany({
+      where: { householdId: household.id },
+      select: { id: true, name: true, kind: true, parentId: true },
+    }),
   ]);
 
   return (

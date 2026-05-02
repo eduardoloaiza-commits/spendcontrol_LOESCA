@@ -7,18 +7,27 @@ const Patch = z.object({
   categoryId: z.string().nullable().optional(),
   finAccountId: z.string().optional(),
   status: z.enum(["pending", "confirmed", "ignored"]).optional(),
-  description: z.string().optional(),
+  description: z.string().trim().min(1).optional(),
   amount: z.number().int().optional(),
+  occurredAt: z.string().optional(),
+  merchant: z.string().nullable().optional(),
 });
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const { household } = await requireHousehold();
-  const data = Patch.parse(await req.json());
+  const parsed = Patch.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
+  }
   const existing = await prisma.transaction.findFirst({
     where: { id: params.id, householdId: household.id },
   });
   if (!existing) return NextResponse.json({ error: "not-found" }, { status: 404 });
-  const updated = await prisma.transaction.update({ where: { id: params.id }, data });
+  const { occurredAt, ...rest } = parsed.data;
+  const updated = await prisma.transaction.update({
+    where: { id: params.id },
+    data: { ...rest, ...(occurredAt ? { occurredAt: new Date(occurredAt) } : {}) },
+  });
   return NextResponse.json(updated);
 }
 
