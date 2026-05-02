@@ -10,6 +10,8 @@ const sectionTitles: Record<string, { title: string; subtitle: string }> = {
   "/reconcile": { title: "Conciliar", subtitle: "Centro de reconciliación" },
   "/email": { title: "Correo", subtitle: "Fuentes de datos conectadas" },
   "/settings": { title: "Ajustes", subtitle: "Sesión y hogar" },
+  "/admin": { title: "Administración", subtitle: "Usuarios y hogares" },
+  "/no-household": { title: "Acceso pendiente", subtitle: "Sin hogar asignado" },
 };
 
 export function TopBar({

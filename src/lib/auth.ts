@@ -22,17 +22,35 @@ export const authOptions: NextAuthOptions = {
         if (!user?.passwordHash) return null;
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
-        return { id: user.id, name: user.name, email: user.email, image: user.image };
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+        } as any;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.uid = (user as any).id;
+      if (user) {
+        token.uid = (user as any).id;
+        token.role = (user as any).role ?? "user";
+      } else if (token.uid && !token.role) {
+        const u = await prisma.user.findUnique({
+          where: { id: token.uid as string },
+          select: { role: true },
+        });
+        token.role = u?.role ?? "user";
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token.uid) (session.user as any).id = token.uid;
+      if (session.user) {
+        if (token.uid) (session.user as any).id = token.uid;
+        (session.user as any).role = token.role ?? "user";
+      }
       return session;
     },
   },

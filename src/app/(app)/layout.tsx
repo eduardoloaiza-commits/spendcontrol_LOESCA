@@ -1,23 +1,20 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { Sidebar } from "@/components/nav/Sidebar";
 import { TopBar } from "@/components/nav/TopBar";
 import { Providers } from "@/components/Providers";
-import { requireHousehold } from "@/lib/household";
+import { requireUser, getUserHousehold } from "@/lib/household";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/");
-  const { user, household } = await requireHousehold();
+  const user = await requireUser();
+  const found = await getUserHousehold(user.id);
+  const householdName = found?.household.name ?? "Sin hogar asignado";
 
   return (
     <Providers>
       <div className="min-h-screen bg-surface">
-        <Sidebar />
+        <Sidebar role={user.role} />
         <TopBar
-          householdName={household.name}
-          userName={user.name ?? user.email}
+          householdName={householdName}
+          userName={user.name ?? user.email ?? ""}
           userImage={user.image}
         />
         <main className="md:ml-64 min-h-screen">

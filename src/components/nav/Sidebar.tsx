@@ -13,12 +13,13 @@ import {
   LifeBuoy,
   LogOut,
   Users,
+  ShieldCheck,
 } from "lucide-react";
 import clsx from "clsx";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 
-const items = [
+const baseItems = [
   { href: "/dashboard", label: "Resumen", icon: LayoutDashboard },
   { href: "/transactions", label: "Movimientos", icon: Receipt },
   { href: "/accounts", label: "Cuentas", icon: Wallet },
@@ -28,7 +29,10 @@ const items = [
   { href: "/settings", label: "Ajustes", icon: Settings },
 ];
 
-export function Sidebar() {
+const adminItem = { href: "/admin", label: "Administración", icon: ShieldCheck };
+
+export function Sidebar({ role }: { role?: string }) {
+  const items = role === "admin" ? [...baseItems, adminItem] : baseItems;
   const path = usePathname();
   const [open, setOpen] = useState(false);
 
