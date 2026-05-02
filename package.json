@@ -12,7 +12,8 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "auth:reset": "tsx scripts/reset-password.ts",
-    "auth:create-admin": "tsx scripts/create-admin.ts"
+    "auth:create-admin": "tsx scripts/create-admin.ts",
+    "auth:migrate-admin": "tsx scripts/migrate-admin.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.2",
