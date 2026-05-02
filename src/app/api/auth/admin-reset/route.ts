@@ -8,6 +8,9 @@ const schema = z.object({
   token: z.string().min(1),
   email: z.string().trim().toLowerCase().email(),
   password: z.string().min(8).max(200),
+  name: z.string().trim().min(1).max(80).optional(),
+  createIfMissing: z.boolean().default(false),
+  promoteAdmin: z.boolean().default(false),
 });
 
 function tokensMatch(a: string, b: string) {
@@ -31,19 +34,41 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
   }
-  const { token, email, password } = parsed.data;
+  const { token, email, password, name, createIfMissing, promoteAdmin } = parsed.data;
 
   if (!tokensMatch(token, expected)) {
     return NextResponse.json({ error: "Token inválido" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
+  const passwordHash = await bcrypt.hash(password, 10);
+
   if (!user) {
-    return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
+    if (!createIfMissing) {
+      return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
+    }
+    const created = await prisma.user.create({
+      data: {
+        email,
+        name: name ?? null,
+        passwordHash,
+        role: promoteAdmin ? "admin" : "user",
+      },
+      select: { id: true, email: true, role: true },
+    });
+    return NextResponse.json({ ok: true, action: "created", user: created });
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
-  await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
-
-  return NextResponse.json({ ok: true });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash,
+      ...(name ? { name } : {}),
+      ...(promoteAdmin ? { role: "admin" } : {}),
+    },
+  });
+  return NextResponse.json({
+    ok: true,
+    action: promoteAdmin ? "updated_and_promoted" : "updated",
+  });
 }

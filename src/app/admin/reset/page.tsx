@@ -23,10 +23,11 @@ export default function AdminResetPage() {
       <section className="flex-1 flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <h1 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface mb-2">
-            Reset de clave
+            Bootstrap admin
           </h1>
           <p className="text-sm text-on-surface-variant mb-8">
-            Solo para el dueño. Necesitas el token configurado en el servidor.
+            Solo para el dueño. Resetea clave o crea un usuario admin con el token
+            configurado en el servidor (<code>ADMIN_RESET_TOKEN</code>).
           </p>
           <AdminResetForm />
           <p className="text-center text-xs text-on-surface-variant mt-6">
