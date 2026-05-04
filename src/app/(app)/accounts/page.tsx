@@ -24,7 +24,7 @@ const kindLabel: Record<string, string> = {
 export default async function AccountsPage() {
   const { household } = await requireHousehold();
   const accounts = await prisma.finAccount.findMany({
-    where: { householdId: household.id, archived: false },
+    where: { householdId: household.id, archived: false, kind: { not: "fund" } },
     include: { transactions: { where: { status: "confirmed" } } },
     orderBy: { createdAt: "asc" },
   });

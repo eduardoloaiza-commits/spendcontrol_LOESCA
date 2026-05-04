@@ -83,12 +83,17 @@ model FinAccount {
   id          String        @id @default(cuid())
   householdId String
   name        String
-  kind        String        // checking | credit | cash | savings | other
+  kind        String        // checking | credit | cash | savings | other | fund
   bank        String?
   last4       String?
   currency    String        @default("CLP")
   openingBalance Int        @default(0) // en centavos/pesos enteros
   archived    Boolean       @default(false)
+  // Campos para fondos de ahorro (kind="fund")
+  focus         String?
+  monthlyTarget Int?
+  goalAmount    Int?
+  goalDate      DateTime?
   household   Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   createdAt   DateTime      @default(now())

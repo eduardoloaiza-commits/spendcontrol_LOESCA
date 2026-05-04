@@ -14,6 +14,7 @@ import {
   Sparkles,
   Wallet,
   Tag,
+  PiggyBank,
 } from "lucide-react";
 
 export default async function Dashboard() {
@@ -44,6 +45,20 @@ export default async function Dashboard() {
   const pendientes = await prisma.transaction.count({
     where: { householdId: household.id, status: "pending" },
   });
+
+  const fondos = await prisma.finAccount.findMany({
+    where: { householdId: household.id, archived: false, kind: "fund" },
+    include: { transactions: { where: { status: "confirmed" } } },
+    orderBy: { createdAt: "asc" },
+  });
+  const fondosResumen = fondos.map((f) => {
+    const saldo = f.openingBalance + f.transactions.reduce((s, t) => s + t.amount, 0);
+    const goalPct = f.goalAmount && f.goalAmount > 0
+      ? Math.max(0, Math.min(100, Math.round((saldo / f.goalAmount) * 100)))
+      : null;
+    return { id: f.id, name: f.name, focus: f.focus, saldo, goalAmount: f.goalAmount, goalPct };
+  });
+  const totalFondos = fondosResumen.reduce((s, f) => s + f.saldo, 0);
 
   return (
     <div className="grid grid-cols-12 gap-6">
@@ -149,6 +164,79 @@ export default async function Dashboard() {
               );
             })}
           </ul>
+        )}
+      </Card>
+
+      {/* Fondos de ahorro */}
+      <Card tone="muted" className="col-span-12">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <CardTitle className="mb-1">Fondos de ahorro</CardTitle>
+            <h4 className="font-headline text-xl font-bold">
+              Acumulado total: <span className="amount">{formatCLP(totalFondos)}</span>
+            </h4>
+          </div>
+          <Link href="/fondos" className="text-primary font-bold text-sm hover:underline">
+            Ver fondos →
+          </Link>
+        </div>
+        {fondosResumen.length === 0 ? (
+          <div className="flex items-center gap-4 py-2">
+            <div className="w-11 h-11 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center">
+              <PiggyBank size={18} />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-on-surface">Aún no tienes fondos de ahorro</p>
+              <p className="text-xs text-on-surface-variant">
+                Crea uno para reservar plata con un foco (vacaciones, emergencia, auto…).
+              </p>
+            </div>
+            <Link
+              href="/fondos"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl py-2.5 px-4 font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              Crear fondo
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {fondosResumen.map((f) => (
+              <Link
+                key={f.id}
+                href={`/fondos/${f.id}`}
+                className="block bg-surface-container-lowest rounded-2xl p-5 hover:scale-[1.01] transition-transform"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center">
+                    <PiggyBank size={16} />
+                  </div>
+                </div>
+                <p className="font-bold text-sm text-on-surface truncate">{f.name}</p>
+                {f.focus && (
+                  <p className="text-[11px] text-on-surface-variant truncate">{f.focus}</p>
+                )}
+                <p className="amount font-headline text-2xl font-extrabold mt-2">
+                  {formatCLP(f.saldo)}
+                </p>
+                {f.goalPct !== null && (
+                  <div className="mt-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">
+                        Meta
+                      </span>
+                      <span className="text-[11px] font-bold">{f.goalPct}%</span>
+                    </div>
+                    <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${f.goalPct}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </Link>
+            ))}
+          </div>
         )}
       </Card>
 

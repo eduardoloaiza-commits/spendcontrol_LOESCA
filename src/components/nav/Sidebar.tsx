@@ -14,6 +14,7 @@ import {
   LogOut,
   Users,
   ShieldCheck,
+  PiggyBank,
 } from "lucide-react";
 import clsx from "clsx";
 import { signOut } from "next-auth/react";
@@ -23,6 +24,7 @@ const baseItems = [
   { href: "/dashboard", label: "Resumen", icon: LayoutDashboard },
   { href: "/transactions", label: "Movimientos", icon: Receipt },
   { href: "/accounts", label: "Cuentas", icon: Wallet },
+  { href: "/fondos", label: "Fondos", icon: PiggyBank },
   { href: "/categories", label: "Categorías", icon: Tags },
   { href: "/reconcile", label: "Conciliar", icon: CheckSquare },
   { href: "/email", label: "Correo", icon: Mail },
